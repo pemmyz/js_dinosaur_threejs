@@ -51,7 +51,16 @@ html, body {
 .hud-top-left {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
+}
+
+#fullscreen-btn {
+    pointer-events: auto;
+    font-family: 'Press Start 2P', monospace, sans-serif;
+    font-size: 10px;
+    padding: 6px 10px;
+    width: fit-content;
 }
 
 .logo {
@@ -252,6 +261,15 @@ html, body {
     backdrop-filter: blur(5px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
     outline: none;
+    text-shadow:
+        -1px -1px 0 #000,
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000,
+        -1px  0px 0 #000,
+         1px  0px 0 #000,
+         0px -1px 0 #000,
+         0px  1px 0 #000;
 }
 
 .mobile-btn:active {

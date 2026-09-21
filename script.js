@@ -228,40 +228,40 @@ class InputManager {
 class ModelFactory {
     static initMaterials() {
         this.mats = {
-            dinoSkin: new THREE.MeshLambertMaterial({ color: 0x487346, flatShading: true }),
-            dinoBelly: new THREE.MeshLambertMaterial({ color: 0x7ca96a, flatShading: true }),
+            dinoSkin: new THREE.MeshStandardMaterial({ color: 0x487346, flatShading: true, roughness: 0.8 }),
+            dinoBelly: new THREE.MeshStandardMaterial({ color: 0x7ca96a, flatShading: true, roughness: 0.8 }),
             dinoEyes: new THREE.MeshPhongMaterial({ color: 0x111111, shininess: 80 }),
             dinoEyePupil: new THREE.MeshBasicMaterial({ color: 0xffffff }),
-            dinoTeeth: new THREE.MeshLambertMaterial({ color: 0xf5f3e9, flatShading: true }),
-            dinoClaws: new THREE.MeshLambertMaterial({ color: 0x2b2b2b, flatShading: true }),
+            dinoTeeth: new THREE.MeshStandardMaterial({ color: 0xf5f3e9, flatShading: true, roughness: 0.5 }),
+            dinoClaws: new THREE.MeshStandardMaterial({ color: 0x2b2b2b, flatShading: true, roughness: 0.7 }),
 
             // Cactus & Desert Flora Materials
-            cactusBase: new THREE.MeshLambertMaterial({ color: 0x2e6b36, flatShading: true }),
-            cactusSage: new THREE.MeshLambertMaterial({ color: 0x3d745a, flatShading: true }),
-            cactusOlive: new THREE.MeshLambertMaterial({ color: 0x47632a, flatShading: true }),
-            cactusDark: new THREE.MeshLambertMaterial({ color: 0x1f4e2b, flatShading: true }),
-            cactusLime: new THREE.MeshLambertMaterial({ color: 0x4a9344, flatShading: true }),
-            cactusPale: new THREE.MeshLambertMaterial({ color: 0x6e9668, flatShading: true }),
-            cactusFlower: new THREE.MeshLambertMaterial({ color: 0xef476f, flatShading: true }),
-            cactusFlowerGold: new THREE.MeshLambertMaterial({ color: 0xffb703, flatShading: true }),
-            cactusFruit: new THREE.MeshLambertMaterial({ color: 0xb5179e, flatShading: true }),
-            cactusWool: new THREE.MeshLambertMaterial({ color: 0xede0d4, flatShading: true }),
-            yuccaTrunk: new THREE.MeshLambertMaterial({ color: 0x5c4233, flatShading: true }),
-            yuccaLeaf: new THREE.MeshLambertMaterial({ color: 0x285a3c, flatShading: true }),
+            cactusBase: new THREE.MeshStandardMaterial({ color: 0x2e6b36, flatShading: true, roughness: 0.85 }),
+            cactusSage: new THREE.MeshStandardMaterial({ color: 0x3d745a, flatShading: true, roughness: 0.85 }),
+            cactusOlive: new THREE.MeshStandardMaterial({ color: 0x47632a, flatShading: true, roughness: 0.85 }),
+            cactusDark: new THREE.MeshStandardMaterial({ color: 0x1f4e2b, flatShading: true, roughness: 0.85 }),
+            cactusLime: new THREE.MeshStandardMaterial({ color: 0x4a9344, flatShading: true, roughness: 0.85 }),
+            cactusPale: new THREE.MeshStandardMaterial({ color: 0x6e9668, flatShading: true, roughness: 0.85 }),
+            cactusFlower: new THREE.MeshStandardMaterial({ color: 0xef476f, flatShading: true, roughness: 0.6 }),
+            cactusFlowerGold: new THREE.MeshStandardMaterial({ color: 0xffb703, flatShading: true, roughness: 0.6 }),
+            cactusFruit: new THREE.MeshStandardMaterial({ color: 0xb5179e, flatShading: true, roughness: 0.7 }),
+            cactusWool: new THREE.MeshStandardMaterial({ color: 0xede0d4, flatShading: true, roughness: 0.95 }),
+            yuccaTrunk: new THREE.MeshStandardMaterial({ color: 0x5c4233, flatShading: true, roughness: 0.9 }),
+            yuccaLeaf: new THREE.MeshStandardMaterial({ color: 0x285a3c, flatShading: true, roughness: 0.8 }),
 
-            rockBase: new THREE.MeshLambertMaterial({ color: 0x7d7b7a, flatShading: true }),
-            rockDark: new THREE.MeshLambertMaterial({ color: 0x5a5756, flatShading: true }),
+            rockBase: new THREE.MeshStandardMaterial({ color: 0x7d7b7a, flatShading: true, roughness: 0.9 }),
+            rockDark: new THREE.MeshStandardMaterial({ color: 0x5a5756, flatShading: true, roughness: 0.9 }),
 
-            birdBody: new THREE.MeshLambertMaterial({ color: 0xa84a32, flatShading: true }),
-            birdWing: new THREE.MeshLambertMaterial({ color: 0xd4684b, flatShading: true }),
-            birdBeak: new THREE.MeshLambertMaterial({ color: 0xe9c46a, flatShading: true }),
+            birdBody: new THREE.MeshStandardMaterial({ color: 0xa84a32, flatShading: true, roughness: 0.8 }),
+            birdWing: new THREE.MeshStandardMaterial({ color: 0xd4684b, flatShading: true, roughness: 0.8 }),
+            birdBeak: new THREE.MeshStandardMaterial({ color: 0xe9c46a, flatShading: true, roughness: 0.6 }),
 
-            sandGround: new THREE.MeshLambertMaterial({ color: 0xded29e, flatShading: true }),
-            grassGround: new THREE.MeshLambertMaterial({ color: 0x52b788, flatShading: true }),
-            volcanicGround: new THREE.MeshLambertMaterial({ color: 0x262428, flatShading: true }),
+            sandGround: new THREE.MeshStandardMaterial({ color: 0xded29e, flatShading: true, roughness: 0.95 }),
+            grassGround: new THREE.MeshStandardMaterial({ color: 0x52b788, flatShading: true, roughness: 0.95 }),
+            volcanicGround: new THREE.MeshStandardMaterial({ color: 0x262428, flatShading: true, roughness: 0.95 }),
 
-            cloudMat: new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.90, flatShading: true }),
-            mountainCloudMat: new THREE.MeshLambertMaterial({ color: 0xf0f4f8, transparent: true, opacity: 0.78, flatShading: true })
+            cloudMat: new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.90, flatShading: true, roughness: 1.0 }),
+            mountainCloudMat: new THREE.MeshStandardMaterial({ color: 0xf0f4f8, transparent: true, opacity: 0.78, flatShading: true, roughness: 1.0 })
         };
     }
 
@@ -1140,7 +1140,6 @@ class ModelFactory {
         for (let i = 0; i < count; i++) {
             const r = 1.0 + Math.random() * 1.1;
             const puff = new THREE.Mesh(new THREE.DodecahedronGeometry(r, 1), this.mats.mountainCloudMat);
-            // Elongated horizontal cloud bank
             puff.position.set(
                 (i - count / 2) * 1.25 + (Math.random() - 0.5) * 0.4,
                 (Math.random() - 0.5) * 0.6,
@@ -1162,7 +1161,7 @@ class ModelFactory {
             }
         }
         geo.computeVertexNormals();
-        const mat = new THREE.MeshLambertMaterial({ color: 0x4a4a58, flatShading: true });
+        const mat = new THREE.MeshStandardMaterial({ color: 0x4a4a58, flatShading: true, roughness: 0.95 });
         const mountain = new THREE.Mesh(geo, mat);
         mountain.position.y = height / 2;
         return mountain;
@@ -1465,7 +1464,7 @@ class EnvironmentManager {
     constructor(scene) {
         this.scene = scene;
         this.segments = [];
-        this.midScenery = [];      // Now holds the 10 big background cacti varieties
+        this.midScenery = [];      // Holds the 10 big background cacti varieties
         this.mountains = [];       // Far mountain peaks
         this.mountainClouds = [];  // Volumetric clouds situated right with the mountains
         this.clouds = [];          // High sky clouds
@@ -1723,7 +1722,27 @@ class Game {
     bindUI() {
         const audioBtn = document.getElementById('audio-toggle-btn');
         const pauseBtn = document.getElementById('pause-btn');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
 
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    const docEl = document.documentElement;
+                    if (docEl.requestFullscreen) {
+                        docEl.requestFullscreen();
+                    } else if (docEl.webkitRequestFullscreen) {
+                        docEl.webkitRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+            });
+        }
         if (audioBtn) {
             audioBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
