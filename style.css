@@ -1,0 +1,272 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #1a1a1a;
+    font-family: 'Press Start 2P', monospace, sans-serif;
+    color: #f7f7f7;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#webgl-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+}
+
+/* --- HUD --- */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    pointer-events: none;
+    z-index: 10;
+    text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
+}
+
+.hud-top-left {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.logo {
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: #ffd166;
+}
+
+.badge {
+    font-size: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: inline-block;
+    width: fit-content;
+    color: #06d6a0;
+}
+
+.hud-top-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.score-display {
+    font-size: 14px;
+    letter-spacing: 2px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hud-controls-hint {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: auto;
+    display: flex;
+    gap: 12px;
+}
+
+.icon-btn {
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* --- Overlays --- */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(10, 10, 15, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 20;
+    transition: opacity 0.25s ease;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.panel {
+    background: rgba(25, 25, 30, 0.9);
+    border: 3px solid #535353;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.05);
+    padding: 35px 45px;
+    text-align: center;
+    border-radius: 12px;
+    max-width: 520px;
+    width: 90%;
+}
+
+.title {
+    font-size: 26px;
+    color: #06d6a0;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 0 #073b4c;
+}
+
+.subtitle {
+    font-size: 11px;
+    color: #ef476f;
+    margin-bottom: 30px;
+    letter-spacing: 1px;
+}
+
+.danger {
+    color: #ef476f;
+    font-size: 28px;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 0 #3a000d;
+}
+
+.prompt {
+    font-size: 12px;
+    color: #ffd166;
+    margin: 25px 0;
+    line-height: 1.6;
+}
+
+.blink {
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+.instructions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 9px;
+    color: #aaa;
+    border-top: 1px dashed #444;
+    padding-top: 15px;
+}
+
+.key {
+    background: #333;
+    color: #fff;
+    padding: 3px 6px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    box-shadow: 0 2px 0 #111;
+}
+
+.final-stats {
+    font-size: 11px;
+    line-height: 2;
+    margin: 20px 0;
+    color: #eee;
+}
+
+/* --- Debug Overlay --- */
+#debug-overlay {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid #06d6a0;
+    color: #06d6a0;
+    font-size: 9px;
+    line-height: 1.8;
+    padding: 10px 15px;
+    z-index: 50;
+    border-radius: 6px;
+    pointer-events: none;
+    font-family: monospace;
+}
+
+/* --- Mobile Controls --- */
+#mobile-controls {
+    position: absolute;
+    bottom: 25px;
+    left: 0;
+    width: 100%;
+    display: none;
+    justify-content: space-between;
+    padding: 0 40px;
+    z-index: 30;
+    pointer-events: none;
+}
+
+.mobile-btn {
+    pointer-events: auto;
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    outline: none;
+}
+
+.mobile-btn:active {
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(0.92);
+}
+
+/* Show mobile buttons on small touch viewports */
+@media (max-width: 900px), (hover: none) and (pointer: coarse) {
+    #mobile-controls {
+        display: flex;
+    }
+    .hud-controls-hint {
+        top: auto;
+        bottom: 25px;
+        left: 50%;
+    }
+}
