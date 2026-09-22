@@ -44,7 +44,7 @@ html, body {
     justify-content: space-between;
     align-items: flex-start;
     pointer-events: none;
-    z-index: 10;
+    z-index: 100; /* Elevated above overlays so controls are always accessible */
     text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7);
 }
 
@@ -84,6 +84,9 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    pointer-events: auto; /* Ensures child interactive elements receive touch events */
+    position: relative;
+    z-index: 101;
 }
 
 .score-display {
@@ -121,6 +124,68 @@ html, body {
     transform: scale(1.05);
 }
 
+/* --- DEV MODE & PIXEL ART STYLES --- */
+#dev-mode-btn {
+    pointer-events: auto;
+    font-size: 10px;
+    padding: 8px 12px;
+    min-height: 36px;
+    margin-top: 8px;
+    color: #ffd166;
+    border-color: #ffd166;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
+#dev-mode-btn.active {
+    background: #ffd166;
+    color: #1a1a1a;
+}
+
+#dev-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    background: rgba(20, 20, 26, 0.98);
+    border: 2px solid #ffd166;
+    border-radius: 6px;
+    padding: 10px 12px;
+    pointer-events: auto;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8);
+    width: 250px;
+    max-width: calc(100vw - 28px); /* Prevents clipping on narrow screens */
+}
+
+.dev-select {
+    background: #2a2a34;
+    color: #06d6a0;
+    border: 1px solid #ffd166;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    padding: 10px 8px;
+    min-height: 38px; /* Standard mobile touch target height */
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+    width: 100%;
+    display: block;
+    user-select: auto !important;
+    -webkit-user-select: auto !important;
+    -webkit-appearance: menulist; /* Forces Android Chrome to display native dropdown */
+    appearance: menulist;
+}
+
+.dev-select option {
+    background: #1b1b22;
+    color: #fff;
+}
+
+.pixel-art-canvas {
+    image-rendering: pixelated !important;
+    image-rendering: crisp-edges !important;
+}
+
 /* --- Overlays --- */
 .overlay {
     position: absolute;
@@ -135,6 +200,10 @@ html, body {
     backdrop-filter: blur(4px);
     z-index: 20;
     transition: opacity 0.25s ease;
+}
+
+#pause-overlay {
+    cursor: pointer;
 }
 
 .hidden {
@@ -279,6 +348,24 @@ html, body {
 
 /* Show mobile buttons on small touch viewports */
 @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+    #hud {
+        padding: 12px 14px;
+    }
+    .score-display {
+        font-size: 10px;
+        padding: 6px 8px;
+    }
+    .logo {
+        font-size: 11px;
+    }
+    #dev-menu {
+        width: 230px;
+        max-width: calc(100vw - 28px);
+    }
+    .dev-select {
+        font-size: 8px;
+        min-height: 38px;
+    }
     #mobile-controls {
         display: flex;
     }

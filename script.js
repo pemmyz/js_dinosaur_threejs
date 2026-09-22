@@ -171,7 +171,14 @@ class InputManager {
 
         if (jumpBtn) {
             bindPress(jumpBtn,
-                () => { this.keys.jump = true; this.game.onJumpAction(); },
+                () => {
+                    if (this.game.state === 'PAUSED') {
+                        this.game.togglePause();
+                        return;
+                    }
+                    this.keys.jump = true;
+                    this.game.onJumpAction();
+                },
                 () => { this.keys.jump = false; this.game.onJumpRelease(); }
             );
         }
@@ -184,6 +191,13 @@ class InputManager {
 
         window.addEventListener('pointerdown', (e) => {
             if (e.target.closest('#hud') || e.target.closest('#mobile-controls')) return;
+
+            // Resume game if screen is tapped while paused
+            if (this.game.state === 'PAUSED') {
+                this.game.togglePause();
+                return;
+            }
+
             if (this.game.state === 'TITLE' || this.game.state === 'GAME_OVER') {
                 this.game.onJumpAction();
             }
@@ -269,7 +283,6 @@ class ModelFactory {
     static createDinosaur() {
         const root = new THREE.Group();
 
-        // Body raised so hip joints and legs connect naturally above ground level
         const bodyGeo = new THREE.BoxGeometry(0.85, 0.95, 0.65);
         const body = new THREE.Mesh(bodyGeo, this.mats.dinoSkin);
         body.position.set(0, 1.08, 0);
@@ -372,7 +385,6 @@ class ModelFactory {
         const armR = makeArm(false);
         body.add(armL); body.add(armR);
 
-        // Tail total length = 0.48 + 0.3 + 0.26 + 0.22 = 1.26 units; base thickness = 0.35 units
         const tailSegments = [];
         let prevTail = body;
         const tailDims = [
@@ -394,7 +406,6 @@ class ModelFactory {
 
         const makeLeg = (isLeft) => {
             const legRoot = new THREE.Group();
-            // Hip height set to 0.73 so foot base rests exactly at y = 0.00
             legRoot.position.set(-0.05, 0.73, isLeft ? 0.35 : -0.35);
 
             const upperLegGeo = new THREE.BoxGeometry(0.24, 0.45, 0.2);
@@ -521,7 +532,6 @@ class ModelFactory {
         const type = Math.abs(typeIndex) % 10;
 
         switch (type) {
-            // TYPE 0: CLASSIC SAGUARO
             case 0: {
                 const mat = this.mats.cactusBase;
                 const h = 4.2;
@@ -577,7 +587,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 1: CANDELABRA PATRIARCH SAGUARO
             case 1: {
                 const mat = this.mats.cactusDark;
                 const h = 4.8;
@@ -622,7 +631,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 2: PRICKLY PEAR / NOPAL
             case 2: {
                 const mat = this.mats.cactusPale;
 
@@ -690,7 +698,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 3: GIANT BARREL CACTUS CLUSTER
             case 3: {
                 const mat = this.mats.cactusOlive;
 
@@ -724,7 +731,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 4: ORGAN PIPE CACTUS
             case 4: {
                 const mat = this.mats.cactusSage;
 
@@ -766,7 +772,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 5: CARDÓN GIGANTE
             case 5: {
                 const mat = this.mats.cactusDark;
 
@@ -809,7 +814,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 6: CRESTED / CRISTATE SAGUARO
             case 6: {
                 const mat = this.mats.cactusBase;
                 const trunkH = 2.6;
@@ -854,7 +858,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 7: DESERT JOSHUA / YUCCA TREE
             case 7: {
                 const trunkMat = this.mats.yuccaTrunk;
                 const leafMat = this.mats.yuccaLeaf;
@@ -914,7 +917,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 8: JUMPING CHOLLA
             case 8: {
                 const mat = this.mats.cactusLime;
 
@@ -959,7 +961,6 @@ class ModelFactory {
                 break;
             }
 
-            // TYPE 9: TWISTED TOTEM / OLD MAN CACTUS
             case 9:
             default: {
                 const mat = this.mats.cactusSage;
@@ -1131,7 +1132,6 @@ class ParticleManager {
         this.scene = scene;
         this.particles = [];
 
-        // Low-poly faceted box for dust and debris
         this.dustGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
         this.impactGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
 
@@ -1145,22 +1145,16 @@ class ParticleManager {
         this.sparkMat = new THREE.MeshBasicMaterial({ color: 0xffd166 });
     }
 
-    /**
-     * Spawns a volumetric dust cloud trail that matches the length (~1.25)
-     * and thickness (~0.35) of the dinosaur's tail.
-     */
     spawnDust(footX, footY, footZ, count = 8) {
-        const tailLength = 1.26;    // Tail extends ~1.26 units backward
-        const tailThickness = 0.35; // Tail base diameter is ~0.35 units
+        const tailLength = 1.26;
+        const tailThickness = 0.35;
 
         for (let i = 0; i < count; i++) {
             const p = new THREE.Mesh(this.dustGeo, this.dustMat);
 
-            // Spread backward along the full length of the tail
             const progress = (i + Math.random()) / count;
             const spreadX = -progress * tailLength;
 
-            // Height and lateral width match the tail's thickness profile
             const currentThickness = tailThickness * (0.65 + progress * 0.35);
             const spreadY = 0.05 + Math.random() * currentThickness;
             const spreadZ = (Math.random() - 0.5) * currentThickness;
@@ -1168,11 +1162,9 @@ class ParticleManager {
             p.position.set(footX + spreadX, footY + spreadY, footZ + spreadZ);
             p.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
 
-            // Scaled so clusters form a plume as thick as the tail
             const baseScale = 0.7 + Math.random() * 0.65;
             p.scale.setScalar(baseScale * 0.3);
 
-            // Soft backwards draft and gentle lift
             const vx = -1.2 - Math.random() * 2.2;
             const vy = 0.25 + Math.random() * 0.55;
             const vz = (Math.random() - 0.5) * 0.35;
@@ -1214,17 +1206,14 @@ class ParticleManager {
             p.life -= p.decay * delta;
 
             if (p.isDust) {
-                // Dust billows gently upward, drifts with airflow, and eases out
                 p.vy += (0.1 - p.vy * 1.5) * delta;
                 p.vx *= (1 - 1.2 * delta);
                 p.mesh.rotation.x += 0.4 * delta;
                 p.mesh.rotation.y += 0.5 * delta;
 
-                // Expand into billow then shrink out
                 const billow = Math.sin(Math.max(0, p.life) * Math.PI);
                 p.mesh.scale.setScalar(p.baseScale * billow);
             } else {
-                // Collision debris adheres to gravity
                 p.vy -= 9.8 * delta;
                 p.mesh.scale.setScalar(Math.max(0.01, p.life));
             }
@@ -1315,7 +1304,6 @@ class Player {
                 this.isGrounded = true;
                 this.squash = 0.75;
                 this.audio.playLand();
-                // Substantial dust plume on landing matching tail dimensions
                 particleMgr.spawnDust(this.posX, this.posY, this.posZ, 12);
             }
         }
@@ -1335,7 +1323,6 @@ class Player {
             if (this.stepTimer > 1.4) {
                 this.stepTimer = 0;
                 this.audio.playFootstep();
-                // Kicks up a tail-length, tail-thick cloud behind the feet with each step
                 particleMgr.spawnDust(this.posX - 0.25, this.posY, this.posZ, 7);
             }
 
@@ -1376,7 +1363,7 @@ class Player {
 }
 
 // ============================================================================
-// 6. OBSTACLE MANAGER (Cacti, Rocks, Flying Pterodactyls)
+// 6. OBSTACLE MANAGER (Cacti, Rocks, 3 Types of Flying Birds)
 // ============================================================================
 class ObstacleManager {
     constructor(scene) {
@@ -1385,6 +1372,8 @@ class ObstacleManager {
         this.spawnTimer = 2.0;
         this.minSpacing = 16.0;
         this.lastSpawnX = 0;
+        this.enemyMode = 'all';
+        this.birdCycleStep = 0;
     }
 
     reset() {
@@ -1397,6 +1386,28 @@ class ObstacleManager {
     spawn(speed) {
         const types = ['cactus_small', 'cactus_large', 'cactus_triple', 'cactus_cluster', 'rock', 'bird'];
         let choice = types[Math.floor(Math.random() * types.length)];
+        let forcedBirdHeight = null;
+
+        // Dev Mode spawn filtering & sequencing
+        if (this.enemyMode === 'birds_cycle') {
+            choice = 'bird';
+            forcedBirdHeight = this.birdCycleStep % 3; // 0 (low) -> 1 (mid) -> 2 (high)
+            this.birdCycleStep++;
+        } else if (this.enemyMode === 'birds_low') {
+            choice = 'bird';
+            forcedBirdHeight = 0;
+        } else if (this.enemyMode === 'birds_mid') {
+            choice = 'bird';
+            forcedBirdHeight = 1;
+        } else if (this.enemyMode === 'birds_high') {
+            choice = 'bird';
+            forcedBirdHeight = 2;
+        } else if (this.enemyMode === 'cactus') {
+            const cTypes = ['cactus_small', 'cactus_large', 'cactus_triple', 'cactus_cluster'];
+            choice = cTypes[Math.floor(Math.random() * cTypes.length)];
+        } else if (this.enemyMode === 'rock') {
+            choice = 'rock';
+        }
 
         let obsObj = null;
         const posX = 24.0;
@@ -1417,10 +1428,24 @@ class ObstacleManager {
             obsObj = { mesh, type: 'rock', boxDim };
         } else if (choice === 'bird') {
             const birdData = ModelFactory.createPterodactyl();
-            const heightTier = Math.random() < 0.55 ? 1 : (Math.random() < 0.5 ? 0 : 2);
-            if (heightTier === 0) posY = 0.7;
-            else if (heightTier === 1) posY = 1.35;
-            else posY = 2.4;
+
+            // 3 DISTINCT TYPES OF FLYING BIRDS:
+            // 0: Low flying  -> must jump over (hits both standing and crouching)
+            // 1: Mid flying  -> jump over or crouch under (hits standing, clears crouching/jumping)
+            // 2: High flying -> walk under safely, but jumping into it triggers collision
+            let heightTier = 0;
+            if (forcedBirdHeight !== null) {
+                heightTier = forcedBirdHeight;
+            } else {
+                const rand = Math.random();
+                if (rand < 0.34) heightTier = 0;
+                else if (rand < 0.68) heightTier = 1;
+                else heightTier = 2;
+            }
+
+            if (heightTier === 0) posY = 0.65;
+            else if (heightTier === 1) posY = 1.10;
+            else posY = 1.75;
 
             boxDim = { w: 0.8, h: 0.45, d: 0.6 };
             obsObj = {
@@ -1462,12 +1487,10 @@ class ObstacleManager {
 
             const p = obs.mesh.position;
             const b = obs.boxDim;
-            if (obs.type === 'bird' && obs.heightTier === 2) {
-                obs.box.makeEmpty();
-            } else {
-                obs.box.min.set(p.x - b.w / 2, p.y + 0.05, -b.d / 2);
-                obs.box.max.set(p.x + b.w / 2, p.y + b.h, b.d / 2);
-            }
+
+            // Full collision detection enabled for all 3 bird types
+            obs.box.min.set(p.x - b.w / 2, p.y + 0.05, -b.d / 2);
+            obs.box.max.set(p.x + b.w / 2, p.y + b.h, b.d / 2);
 
             if (obs.mesh.position.x < -16.0) {
                 this.scene.remove(obs.mesh);
@@ -1484,10 +1507,10 @@ class EnvironmentManager {
     constructor(scene) {
         this.scene = scene;
         this.segments = [];
-        this.midScenery = [];      // Holds the 10 big background cacti varieties
-        this.mountains = [];       // Far mountain peaks
-        this.mountainClouds = [];  // Volumetric clouds situated right with the mountains
-        this.clouds = [];          // High sky clouds
+        this.midScenery = [];
+        this.mountains = [];
+        this.mountainClouds = [];
+        this.clouds = [];
         this.biomeIndex = 0;
         this.biomes = ['DESERT', 'GRASSLAND', 'FOREST', 'VOLCANIC'];
 
@@ -1518,9 +1541,6 @@ class EnvironmentManager {
     }
 
     initParallaxLayers() {
-        // --------------------------------------------------------------------
-        // 1. Midground: 10 DISTINCT BIG CACTI
-        // --------------------------------------------------------------------
         const cactusCount = 12;
         const cactusSpacing = 6.4;
         for (let i = 0; i < cactusCount; i++) {
@@ -1533,9 +1553,6 @@ class EnvironmentManager {
             this.midScenery.push(cactus);
         }
 
-        // --------------------------------------------------------------------
-        // 2. Distant Mountain Range (Z = -18 to -22)
-        // --------------------------------------------------------------------
         const mountainCount = 6;
         for (let i = 0; i < mountainCount; i++) {
             const m = ModelFactory.createMountain(9 + Math.random() * 5, 6.5 + Math.random() * 5);
@@ -1544,9 +1561,6 @@ class EnvironmentManager {
             this.mountains.push(m);
         }
 
-        // --------------------------------------------------------------------
-        // 3. Clouds Situated with the Mountains (Z = -17.5 to -22)
-        // --------------------------------------------------------------------
         const mountainCloudCount = 7;
         for (let i = 0; i < mountainCloudCount; i++) {
             const mc = ModelFactory.createMountainCloud();
@@ -1555,9 +1569,6 @@ class EnvironmentManager {
             this.mountainClouds.push(mc);
         }
 
-        // --------------------------------------------------------------------
-        // 4. High Sky Puffy Clouds (Z = -11 to -15)
-        // --------------------------------------------------------------------
         const skyCloudCount = 6;
         for (let i = 0; i < skyCloudCount; i++) {
             const c = ModelFactory.createCloud();
@@ -1568,7 +1579,6 @@ class EnvironmentManager {
     }
 
     update(delta, worldSpeed, score) {
-        // Endless Recycling Ground (speed = 1.0)
         const segWidth = 20;
         this.segments.forEach(seg => {
             seg.position.x -= worldSpeed * delta;
@@ -1577,32 +1587,27 @@ class EnvironmentManager {
             }
         });
 
-        // Midground Layer: Big Cacti (speed = 0.55)
         const cactusSpan = 12 * 6.4;
         this.midScenery.forEach(item => {
             item.position.x -= worldSpeed * 0.55 * delta;
             if (item.position.x < -24) item.position.x += cactusSpan;
         });
 
-        // Far Mountains (speed = 0.15)
         this.mountains.forEach(m => {
             m.position.x -= worldSpeed * 0.15 * delta;
             if (m.position.x < -36) m.position.x += 78;
         });
 
-        // Clouds Situated with the Mountains (speed = 0.13)
         this.mountainClouds.forEach(mc => {
             mc.position.x -= worldSpeed * 0.13 * delta;
             if (mc.position.x < -36) mc.position.x += 84;
         });
 
-        // High Sky Clouds Parallax (speed = 0.08)
         this.clouds.forEach(c => {
             c.position.x -= worldSpeed * 0.08 * delta;
             if (c.position.x < -28) c.position.x += 54;
         });
 
-        // Biome Transition
         const currentBiomeIdx = Math.floor((score / 450) % this.biomes.length);
         if (currentBiomeIdx !== this.biomeIndex) {
             this.biomeIndex = currentBiomeIdx;
@@ -1678,6 +1683,9 @@ class Game {
         this.baseCamLookAt = new THREE.Vector3(1.0, 1.2, 0);
 
         this.debugVisible = false;
+        this.devMode = false;
+        this.pixelArtMode = false;
+
         this.lastTime = performance.now();
         this.frameCount = 0;
         this.fps = 60;
@@ -1735,14 +1743,28 @@ class Game {
         window.addEventListener('resize', () => {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
+            const ratio = this.pixelArtMode ? 0.25 : Math.min(window.devicePixelRatio, 2);
+            this.renderer.setPixelRatio(ratio);
             this.renderer.setSize(window.innerWidth, window.innerHeight);
         });
+    }
+
+    setPixelArtMode(enabled) {
+        this.pixelArtMode = enabled;
+        this.canvas.classList.toggle('pixel-art-canvas', enabled);
+        const ratio = enabled ? 0.25 : Math.min(window.devicePixelRatio, 2);
+        this.renderer.setPixelRatio(ratio);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     bindUI() {
         const audioBtn = document.getElementById('audio-toggle-btn');
         const pauseBtn = document.getElementById('pause-btn');
         const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const devBtn = document.getElementById('dev-mode-btn');
+        const devMenu = document.getElementById('dev-menu');
+        const enemySelect = document.getElementById('dev-enemy-select');
+        const pixelSelect = document.getElementById('dev-pixel-select');
 
         if (fullscreenBtn) {
             fullscreenBtn.addEventListener('click', (e) => {
@@ -1776,6 +1798,44 @@ class Game {
                 e.stopPropagation();
                 this.togglePause();
             });
+        }
+
+        if (devBtn && devMenu) {
+            let lastToggleTime = 0;
+            const toggleDevMode = (e) => {
+                if (e) {
+                    e.stopPropagation();
+                }
+                const now = Date.now();
+                if (now - lastToggleTime < 300) return;
+                lastToggleTime = now;
+
+                this.devMode = !this.devMode;
+                devBtn.classList.toggle('active', this.devMode);
+                devMenu.classList.toggle('hidden', !this.devMode);
+            };
+
+            // Supports both touch and click on mobile & desktop
+            devBtn.addEventListener('click', toggleDevMode);
+            devBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                toggleDevMode(e);
+            });
+        }
+
+        if (enemySelect) {
+            enemySelect.addEventListener('change', (e) => {
+                this.obstacles.enemyMode = e.target.value;
+                this.obstacles.birdCycleStep = 0;
+            });
+            enemySelect.addEventListener('keydown', (e) => e.stopPropagation());
+        }
+
+        if (pixelSelect) {
+            pixelSelect.addEventListener('change', (e) => {
+                this.setPixelArtMode(e.target.value === 'pixel');
+            });
+            pixelSelect.addEventListener('keydown', (e) => e.stopPropagation());
         }
     }
 
