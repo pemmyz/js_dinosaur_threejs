@@ -192,7 +192,6 @@ class InputManager {
         window.addEventListener('pointerdown', (e) => {
             if (e.target.closest('#hud') || e.target.closest('#mobile-controls')) return;
 
-            // Resume game if screen is tapped while paused
             if (this.game.state === 'PAUSED') {
                 this.game.togglePause();
                 return;
@@ -1356,7 +1355,8 @@ class Player {
         }
 
         const halfW = 0.32;
-        const h = this.isDucking ? 0.85 : 1.6;
+        // Hitbox height accounts for the standing dino head height (2.35)
+        const h = this.isDucking ? 0.85 : 2.35;
         this.box.min.set(this.posX - halfW, this.posY + 0.05, -0.25);
         this.box.max.set(this.posX + halfW + 0.2, this.posY + h, 0.25);
     }
@@ -1443,9 +1443,10 @@ class ObstacleManager {
                 else heightTier = 2;
             }
 
+            // Both mid and high birds raised by +1.00 so high birds clear the dino's head completely
             if (heightTier === 0) posY = 0.65;
-            else if (heightTier === 1) posY = 1.10;
-            else posY = 1.75;
+            else if (heightTier === 1) posY = 2.10;
+            else posY = 2.75;
 
             boxDim = { w: 0.8, h: 0.45, d: 0.6 };
             obsObj = {
@@ -1815,7 +1816,6 @@ class Game {
                 devMenu.classList.toggle('hidden', !this.devMode);
             };
 
-            // Supports both touch and click on mobile & desktop
             devBtn.addEventListener('click', toggleDevMode);
             devBtn.addEventListener('touchend', (e) => {
                 e.preventDefault();
