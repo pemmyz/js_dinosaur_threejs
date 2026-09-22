@@ -269,9 +269,10 @@ class ModelFactory {
     static createDinosaur() {
         const root = new THREE.Group();
 
+        // Body raised so hip joints and legs connect naturally above ground level
         const bodyGeo = new THREE.BoxGeometry(0.85, 0.95, 0.65);
         const body = new THREE.Mesh(bodyGeo, this.mats.dinoSkin);
-        body.position.set(0, 0.8, 0);
+        body.position.set(0, 1.08, 0);
         body.castShadow = true;
         root.add(body);
 
@@ -371,6 +372,7 @@ class ModelFactory {
         const armR = makeArm(false);
         body.add(armL); body.add(armR);
 
+        // Tail total length = 0.48 + 0.3 + 0.26 + 0.22 = 1.26 units; base thickness = 0.35 units
         const tailSegments = [];
         let prevTail = body;
         const tailDims = [
@@ -392,7 +394,8 @@ class ModelFactory {
 
         const makeLeg = (isLeft) => {
             const legRoot = new THREE.Group();
-            legRoot.position.set(-0.05, 0.45, isLeft ? 0.35 : -0.35);
+            // Hip height set to 0.73 so foot base rests exactly at y = 0.00
+            legRoot.position.set(-0.05, 0.73, isLeft ? 0.35 : -0.35);
 
             const upperLegGeo = new THREE.BoxGeometry(0.24, 0.45, 0.2);
             const upperLeg = new THREE.Mesh(upperLegGeo, this.mats.dinoSkin);
@@ -511,16 +514,14 @@ class ModelFactory {
     }
 
     // ========================================================================
-    // 10 DISTINCT TYPES OF BIG BACKGROUND CACTUSES (Replaces background trees)
+    // 10 DISTINCT TYPES OF BIG BACKGROUND CACTUSES
     // ========================================================================
     static createBigCactus(typeIndex = 0) {
         const root = new THREE.Group();
         const type = Math.abs(typeIndex) % 10;
 
         switch (type) {
-            // ----------------------------------------------------------------
-            // TYPE 0: CLASSIC SAGUARO (Tall ribbed trunk, 2 asymmetrical curved arms)
-            // ----------------------------------------------------------------
+            // TYPE 0: CLASSIC SAGUARO
             case 0: {
                 const mat = this.mats.cactusBase;
                 const h = 4.2;
@@ -534,12 +535,10 @@ class ModelFactory {
                 cap.position.y = h;
                 root.add(cap);
 
-                // Blossom
                 const flower = new THREE.Mesh(new THREE.DodecahedronGeometry(0.18), this.mats.cactusFlower);
                 flower.position.y = h + 0.25;
                 root.add(flower);
 
-                // Arm 1 (Lower Left)
                 const a1 = new THREE.Group();
                 a1.position.set(0, 1.8, 0);
                 const a1h = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 0.9, 7), mat);
@@ -558,7 +557,6 @@ class ModelFactory {
                 a1.add(a1cap);
                 root.add(a1);
 
-                // Arm 2 (Higher Right)
                 const a2 = new THREE.Group();
                 a2.position.set(0, 2.5, 0);
                 const a2h = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.21, 0.8, 7), mat);
@@ -579,9 +577,7 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 1: CANDELABRA PATRIARCH SAGUARO (Massive with 4 radial arms)
-            // ----------------------------------------------------------------
+            // TYPE 1: CANDELABRA PATRIARCH SAGUARO
             case 1: {
                 const mat = this.mats.cactusDark;
                 const h = 4.8;
@@ -595,7 +591,6 @@ class ModelFactory {
                 cap.position.y = h;
                 root.add(cap);
 
-                // 4 arms radiating around the trunk
                 const armConfigs = [
                     { y: 1.5, angle: 0, reach: 0.95, height: 2.1 },
                     { y: 2.1, angle: Math.PI * 0.55, reach: 0.85, height: 1.8 },
@@ -627,9 +622,7 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 2: PRICKLY PEAR / NOPAL (Branching flat pads with magenta tunas)
-            // ----------------------------------------------------------------
+            // TYPE 2: PRICKLY PEAR / NOPAL
             case 2: {
                 const mat = this.mats.cactusPale;
 
@@ -641,27 +634,23 @@ class ModelFactory {
                     return pad;
                 };
 
-                // Base Pad
                 const p0 = createPad(0.7, 0.9, 0.2);
                 p0.position.y = 0.55;
                 p0.rotation.z = 0.1;
                 root.add(p0);
 
-                // Tier 1 Left
                 const p1 = createPad(0.65, 0.85, 0.18);
                 p1.position.set(-0.48, 1.25, 0.05);
                 p1.rotation.z = 0.45;
                 p1.rotation.y = 0.2;
                 root.add(p1);
 
-                // Tier 1 Right
                 const p2 = createPad(0.6, 0.8, 0.18);
                 p2.position.set(0.5, 1.3, -0.05);
                 p2.rotation.z = -0.4;
                 p2.rotation.y = -0.25;
                 root.add(p2);
 
-                // Tier 2 Branches
                 const p3 = createPad(0.55, 0.7, 0.16);
                 p3.position.set(-0.95, 1.85, 0.1);
                 p3.rotation.z = 0.75;
@@ -682,13 +671,11 @@ class ModelFactory {
                 p6.rotation.z = -0.55;
                 root.add(p6);
 
-                // Top tier pads
                 const p7 = createPad(0.45, 0.6, 0.14);
                 p7.position.set(-0.2, 2.75, -0.05);
                 p7.rotation.z = -0.15;
                 root.add(p7);
 
-                // Magenta prickly pear fruits (tunas) on upper pads
                 const fruitSpots = [
                     [-0.95, 2.3, 0.1], [-1.2, 2.0, 0.12],
                     [-0.35, 3.1, -0.05], [-0.05, 3.15, -0.04],
@@ -703,9 +690,7 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 3: GIANT BARREL CACTUS CLUSTER (Ribbed spherical barrels with gold flowers)
-            // ----------------------------------------------------------------
+            // TYPE 3: GIANT BARREL CACTUS CLUSTER
             case 3: {
                 const mat = this.mats.cactusOlive;
 
@@ -723,7 +708,6 @@ class ModelFactory {
                     dome.position.y = h;
                     barrelGroup.add(dome);
 
-                    // Crown of gold blossoms
                     for (let b = 0; b < 5; b++) {
                         const angle = (b / 5) * Math.PI * 2;
                         const bl = new THREE.Mesh(new THREE.DodecahedronGeometry(r * 0.2), this.mats.cactusFlowerGold);
@@ -740,13 +724,10 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 4: ORGAN PIPE CACTUS (Fan of 11 vertical ribbed flutes)
-            // ----------------------------------------------------------------
+            // TYPE 4: ORGAN PIPE CACTUS
             case 4: {
                 const mat = this.mats.cactusSage;
 
-                // Center base mound
                 const base = new THREE.Mesh(new THREE.SphereGeometry(0.65, 8, 5), mat);
                 base.scale.set(1.4, 0.5, 1.2);
                 base.position.y = 0.15;
@@ -785,20 +766,16 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 5: CARDÓN GIGANTE (Massive titan trunk splitting high into columns)
-            // ----------------------------------------------------------------
+            // TYPE 5: CARDÓN GIGANTE
             case 5: {
                 const mat = this.mats.cactusDark;
 
-                // Buttress base
                 const baseH = 2.1;
                 const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.58, 0.72, baseH, 8), mat);
                 trunk.position.y = baseH / 2;
                 trunk.castShadow = true;
                 root.add(trunk);
 
-                // Small root flares
                 for (let rIdx = 0; rIdx < 3; rIdx++) {
                     const flare = new THREE.Mesh(new THREE.ConeGeometry(0.28, 0.8, 5), mat);
                     const fAngle = (rIdx / 3) * Math.PI * 2;
@@ -806,7 +783,6 @@ class ModelFactory {
                     root.add(flare);
                 }
 
-                // 5 vertical columns rising from trunk summit
                 const columnOffsets = [
                     [0, 0, 2.7, 0.38],
                     [-0.52, 0.1, 2.4, 0.32],
@@ -833,9 +809,7 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 6: CRESTED / CRISTATE SAGUARO (Fan-crested ruffled summit)
-            // ----------------------------------------------------------------
+            // TYPE 6: CRESTED / CRISTATE SAGUARO
             case 6: {
                 const mat = this.mats.cactusBase;
                 const trunkH = 2.6;
@@ -846,25 +820,21 @@ class ModelFactory {
                 trunk.castShadow = true;
                 root.add(trunk);
 
-                // Lower normal arm
                 const sideArm = new THREE.Group();
                 sideArm.position.set(0, 1.4, 0);
                 const sH = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.19, 0.6, 6), mat);
-                sH.rotation.z = Math.PI / 2;
-                sH.position.x = -0.4;
                 sideArm.add(sH);
                 const sV = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.18, 0.9, 6), mat);
                 sV.position.set(-0.7, 0.45, 0);
                 sideArm.add(sV);
                 root.add(sideArm);
 
-                // Wavy, ruffled crest fan at the summit
                 const crestGroup = new THREE.Group();
                 crestGroup.position.set(0, trunkH, 0);
 
                 const fanSlices = 7;
                 for (let f = 0; f < fanSlices; f++) {
-                    const u = (f - (fanSlices - 1) / 2) / (fanSlices / 2); // -1 to 1
+                    const u = (f - (fanSlices - 1) / 2) / (fanSlices / 2);
                     const sliceH = 0.95 - Math.abs(u) * 0.35;
                     const sliceW = 0.32;
                     const sliceGeo = new THREE.BoxGeometry(sliceW, sliceH, 0.26 + Math.sin(f * 1.5) * 0.08);
@@ -874,7 +844,6 @@ class ModelFactory {
                     slice.castShadow = true;
                     crestGroup.add(slice);
 
-                    // Crest rim bud
                     if (f % 2 === 0) {
                         const bud = new THREE.Mesh(new THREE.SphereGeometry(0.1, 5, 5), this.mats.cactusFlower);
                         bud.position.set(slice.position.x, slice.position.y + sliceH * 0.52, slice.position.z);
@@ -885,20 +854,16 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 7: DESERT JOSHUA / YUCCA TREE (Forked angular branches with spiky needle tufts)
-            // ----------------------------------------------------------------
+            // TYPE 7: DESERT JOSHUA / YUCCA TREE
             case 7: {
                 const trunkMat = this.mats.yuccaTrunk;
                 const leafMat = this.mats.yuccaLeaf;
 
-                // Main trunk
                 const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.38, 1.8, 6), trunkMat);
                 trunk.position.y = 0.9;
                 trunk.castShadow = true;
                 root.add(trunk);
 
-                // Spiky leaf rosette generator
                 const makeSpikeTuft = () => {
                     const tuft = new THREE.Group();
                     const numLeaves = 16;
@@ -914,7 +879,6 @@ class ModelFactory {
                     return tuft;
                 };
 
-                // Branch 1
                 const b1 = new THREE.Group();
                 b1.position.set(0, 1.7, 0);
                 const l1 = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 1.1, 5), trunkMat);
@@ -926,7 +890,6 @@ class ModelFactory {
                 b1.add(t1);
                 root.add(b1);
 
-                // Branch 2
                 const b2 = new THREE.Group();
                 b2.position.set(0, 1.7, 0);
                 const l2 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.2, 1.2, 5), trunkMat);
@@ -938,7 +901,6 @@ class ModelFactory {
                 b2.add(t2);
                 root.add(b2);
 
-                // Branch 3 (Central higher fork)
                 const b3 = new THREE.Group();
                 b3.position.set(0, 1.8, 0);
                 const l3 = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.19, 1.3, 5), trunkMat);
@@ -952,9 +914,7 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 8: JUMPING CHOLLA (Segmented knobby jointed branching shrub)
-            // ----------------------------------------------------------------
+            // TYPE 8: JUMPING CHOLLA
             case 8: {
                 const mat = this.mats.cactusLime;
 
@@ -984,7 +944,6 @@ class ModelFactory {
                         jGroup.add(joint);
                         root.add(jGroup);
 
-                        // Tip spines
                         const spine = new THREE.Mesh(new THREE.DodecahedronGeometry(0.08), this.mats.cactusFlowerGold);
                         spine.position.set(0, 0.55, 0);
                         jGroup.add(spine);
@@ -1000,9 +959,7 @@ class ModelFactory {
                 break;
             }
 
-            // ----------------------------------------------------------------
-            // TYPE 9: TWISTED TOTEM / OLD MAN CACTUS (Spiral ribs with woolly fuzz top)
-            // ----------------------------------------------------------------
+            // TYPE 9: TWISTED TOTEM / OLD MAN CACTUS
             case 9:
             default: {
                 const mat = this.mats.cactusSage;
@@ -1013,19 +970,17 @@ class ModelFactory {
                 for (let s = 0; s < numSegments; s++) {
                     const seg = new THREE.Mesh(new THREE.CylinderGeometry(baseR * 0.94, baseR, segH, 6), mat);
                     seg.position.y = s * segH + segH / 2;
-                    seg.rotation.y = s * 0.38; // Continuous helical spiral groove
+                    seg.rotation.y = s * 0.38;
                     seg.castShadow = true;
                     root.add(seg);
                 }
 
-                // Woolly white crown ("Old Man Cactus" Cephalocereus senilis)
                 const woolTop = new THREE.Group();
                 woolTop.position.y = numSegments * segH;
 
                 const woolHead = new THREE.Mesh(new THREE.SphereGeometry(0.42, 8, 6), this.mats.cactusWool);
                 woolTop.add(woolHead);
 
-                // Woolly puffs cascading down
                 for (let w = 0; w < 5; w++) {
                     const puff = new THREE.Mesh(new THREE.SphereGeometry(0.18, 5, 5), this.mats.cactusWool);
                     const pAngle = (w / 5) * Math.PI * 2;
@@ -1169,39 +1124,87 @@ class ModelFactory {
 }
 
 // ============================================================================
-// 4. PARTICLE MANAGER (Dust, Footsteps, Collision Debris)
+// 4. PARTICLE MANAGER (Dust Cloud, Footsteps, Collision Debris)
 // ============================================================================
 class ParticleManager {
     constructor(scene) {
         this.scene = scene;
         this.particles = [];
-        this.geo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
-        this.dustMat = new THREE.MeshBasicMaterial({ color: 0xd6ccc2, transparent: true, opacity: 0.8 });
+
+        // Low-poly faceted box for dust and debris
+        this.dustGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+        this.impactGeo = new THREE.BoxGeometry(0.08, 0.08, 0.08);
+
+        this.dustMat = new THREE.MeshStandardMaterial({
+            color: 0xecd9b8,
+            transparent: true,
+            opacity: 0.72,
+            roughness: 0.95,
+            flatShading: true
+        });
         this.sparkMat = new THREE.MeshBasicMaterial({ color: 0xffd166 });
     }
 
-    spawnDust(x, y, z, count = 4) {
+    /**
+     * Spawns a volumetric dust cloud trail that matches the length (~1.25)
+     * and thickness (~0.35) of the dinosaur's tail.
+     */
+    spawnDust(footX, footY, footZ, count = 8) {
+        const tailLength = 1.26;    // Tail extends ~1.26 units backward
+        const tailThickness = 0.35; // Tail base diameter is ~0.35 units
+
         for (let i = 0; i < count; i++) {
-            const p = new THREE.Mesh(this.geo, this.dustMat);
-            p.position.set(x + (Math.random() - 0.5) * 0.2, y + 0.05, z + (Math.random() - 0.5) * 0.2);
-            const vx = -1.5 - Math.random() * 2;
-            const vy = 0.8 + Math.random() * 1.5;
-            const vz = (Math.random() - 0.5) * 1.2;
+            const p = new THREE.Mesh(this.dustGeo, this.dustMat);
+
+            // Spread backward along the full length of the tail
+            const progress = (i + Math.random()) / count;
+            const spreadX = -progress * tailLength;
+
+            // Height and lateral width match the tail's thickness profile
+            const currentThickness = tailThickness * (0.65 + progress * 0.35);
+            const spreadY = 0.05 + Math.random() * currentThickness;
+            const spreadZ = (Math.random() - 0.5) * currentThickness;
+
+            p.position.set(footX + spreadX, footY + spreadY, footZ + spreadZ);
+            p.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+
+            // Scaled so clusters form a plume as thick as the tail
+            const baseScale = 0.7 + Math.random() * 0.65;
+            p.scale.setScalar(baseScale * 0.3);
+
+            // Soft backwards draft and gentle lift
+            const vx = -1.2 - Math.random() * 2.2;
+            const vy = 0.25 + Math.random() * 0.55;
+            const vz = (Math.random() - 0.5) * 0.35;
+
             this.scene.add(p);
-            this.particles.push({ mesh: p, vx, vy, vz, life: 1.0, decay: 2.5 + Math.random() * 2 });
+            this.particles.push({
+                mesh: p,
+                vx, vy, vz,
+                life: 1.0,
+                decay: 1.5 + Math.random() * 1.0,
+                baseScale,
+                isDust: true
+            });
         }
     }
 
     spawnImpact(x, y, z, count = 18) {
         for (let i = 0; i < count; i++) {
             const isSpark = Math.random() > 0.4;
-            const p = new THREE.Mesh(this.geo, isSpark ? this.sparkMat : this.dustMat);
+            const p = new THREE.Mesh(this.impactGeo, isSpark ? this.sparkMat : this.dustMat);
             p.position.set(x, y, z);
             const vx = (Math.random() - 0.5) * 8;
             const vy = 2.0 + Math.random() * 6;
             const vz = (Math.random() - 0.5) * 5;
             this.scene.add(p);
-            this.particles.push({ mesh: p, vx, vy, vz, life: 1.0, decay: 1.8 + Math.random() * 2 });
+            this.particles.push({
+                mesh: p,
+                vx, vy, vz,
+                life: 1.0,
+                decay: 1.8 + Math.random() * 2,
+                isDust: false
+            });
         }
     }
 
@@ -1209,11 +1212,26 @@ class ParticleManager {
         for (let i = this.particles.length - 1; i >= 0; i--) {
             const p = this.particles[i];
             p.life -= p.decay * delta;
-            p.vy -= 9.8 * delta;
+
+            if (p.isDust) {
+                // Dust billows gently upward, drifts with airflow, and eases out
+                p.vy += (0.1 - p.vy * 1.5) * delta;
+                p.vx *= (1 - 1.2 * delta);
+                p.mesh.rotation.x += 0.4 * delta;
+                p.mesh.rotation.y += 0.5 * delta;
+
+                // Expand into billow then shrink out
+                const billow = Math.sin(Math.max(0, p.life) * Math.PI);
+                p.mesh.scale.setScalar(p.baseScale * billow);
+            } else {
+                // Collision debris adheres to gravity
+                p.vy -= 9.8 * delta;
+                p.mesh.scale.setScalar(Math.max(0.01, p.life));
+            }
+
             p.mesh.position.x += p.vx * delta;
             p.mesh.position.y += p.vy * delta;
             p.mesh.position.z += p.vz * delta;
-            p.mesh.scale.setScalar(Math.max(0.01, p.life));
 
             if (p.life <= 0 || p.mesh.position.y < -0.2) {
                 this.scene.remove(p.mesh);
@@ -1297,7 +1315,8 @@ class Player {
                 this.isGrounded = true;
                 this.squash = 0.75;
                 this.audio.playLand();
-                particleMgr.spawnDust(this.posX, this.posY, this.posZ, 6);
+                // Substantial dust plume on landing matching tail dimensions
+                particleMgr.spawnDust(this.posX, this.posY, this.posZ, 12);
             }
         }
 
@@ -1313,10 +1332,11 @@ class Player {
 
         if (this.isGrounded) {
             this.stepTimer += delta * worldSpeed;
-            if (this.stepTimer > 1.8) {
+            if (this.stepTimer > 1.4) {
                 this.stepTimer = 0;
                 this.audio.playFootstep();
-                particleMgr.spawnDust(this.posX - 0.2, this.posY, this.posZ, 2);
+                // Kicks up a tail-length, tail-thick cloud behind the feet with each step
+                particleMgr.spawnDust(this.posX - 0.25, this.posY, this.posZ, 7);
             }
 
             this.dino.legL.root.rotation.z = runCycle * 0.75;
@@ -1349,7 +1369,7 @@ class Player {
         }
 
         const halfW = 0.32;
-        const h = this.isDucking ? 0.75 : 1.35;
+        const h = this.isDucking ? 0.85 : 1.6;
         this.box.min.set(this.posX - halfW, this.posY + 0.05, -0.25);
         this.box.max.set(this.posX + halfW + 0.2, this.posY + h, 0.25);
     }
@@ -1499,14 +1519,14 @@ class EnvironmentManager {
 
     initParallaxLayers() {
         // --------------------------------------------------------------------
-        // 1. Midground: 10 DISTINCT BIG CACTI (Replacing former background trees)
+        // 1. Midground: 10 DISTINCT BIG CACTI
         // --------------------------------------------------------------------
         const cactusCount = 12;
         const cactusSpacing = 6.4;
         for (let i = 0; i < cactusCount; i++) {
             const typeIndex = i % 10;
             const cactus = ModelFactory.createBigCactus(typeIndex);
-            const zStagger = -4.4 - ((i * 3) % 4) * 0.35; // Stagger Z between -4.4 and -5.45
+            const zStagger = -4.4 - ((i * 3) % 4) * 0.35;
             cactus.position.set(i * cactusSpacing - 22, 0, zStagger);
             cactus.rotation.y = ((i * 53) % 360) * (Math.PI / 180);
             this.scene.add(cactus);
@@ -1525,7 +1545,7 @@ class EnvironmentManager {
         }
 
         // --------------------------------------------------------------------
-        // 3. Clouds Situated with the Mountains (Z = -17.5 to -22, hovering ridges)
+        // 3. Clouds Situated with the Mountains (Z = -17.5 to -22)
         // --------------------------------------------------------------------
         const mountainCloudCount = 7;
         for (let i = 0; i < mountainCloudCount; i++) {
